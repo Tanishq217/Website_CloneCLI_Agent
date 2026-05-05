@@ -6,7 +6,7 @@ import * as cheerio from 'cheerio';
 import dotenv from 'dotenv';
 dotenv.config();
 
-// grab api key from .env
+// grab api key from .env, exit early if it's missing
 const apiKey = process.env.GROQ_API_KEY;
 if (!apiKey) {
     console.error("[ERROR] GROQ_API_KEY not found in .env file. Please add it and try again.");
@@ -15,12 +15,10 @@ if (!apiKey) {
 
 const groq = new Groq({ apiKey });
 
-// ─────────────────────────────────────────────
-// TOOL DEFINITIONS
-// The agent uses these tools to get things done.
-// ─────────────────────────────────────────────
+// these are the three tools the agent uses
+// each one does exactly one thing — that's the point
 
-// Tool 1 — write HTML file to disk
+// writes the final HTML to a file
 async function createFile(filename, content) {
     try {
         await fs.writeFile(filename, content, 'utf8');
@@ -30,14 +28,14 @@ async function createFile(filename, content) {
     }
 }
 
-// Tool 2 — open a local HTML file in the default browser
+// opens the cloned page in whatever browser the user has
 async function openInBrowser(filename) {
     try {
         const abs = `${process.cwd()}/${filename}`;
         const cmd = process.platform === 'darwin' ? `open "${abs}"` :
                     process.platform === 'win32'  ? `start "" "${abs}"` :
                                                     `xdg-open "${abs}"`;
-        // wait a bit so the file is definitely flushed before browser tries to read it
+        // wait a bit so the file is written before the browser tries to open it
         await new Promise(r => setTimeout(r, 700));
         exec(cmd);
         return `Opened "${filename}" in browser.`;
@@ -46,7 +44,7 @@ async function openInBrowser(filename) {
     }
 }
 
-// Tool 3 — fetch a URL and extract page structure using cheerio
+// fetches the website and pulls out the parts we care about
 async function scrapeWebsite(url) {
     const res = await fetch(url, {
         headers: {
@@ -58,51 +56,47 @@ async function scrapeWebsite(url) {
     const $ = cheerio.load(html);
 
     return {
-        title:      $('title').text().trim().substring(0, 120)         || 'Untitled',
-        navText:    $('header, nav').first().text().replace(/\s+/g,' ').trim().substring(0, 400) || '',
-        heroText:   $('main, [class*="hero"], section').first().text().replace(/\s+/g,' ').trim().substring(0, 700) || '',
-        footerText: $('footer').first().text().replace(/\s+/g,' ').trim().substring(0, 500) || '',
+        title:      $('title').text().trim().substring(0, 120) || 'Untitled',
+        navText:    $('header, nav').first().text().replace(/\s+/g, ' ').trim().substring(0, 400) || '',
+        heroText:   $('main, [class*="hero"], section').first().text().replace(/\s+/g, ' ').trim().substring(0, 700) || '',
+        footerText: $('footer').first().text().replace(/\s+/g, ' ').trim().substring(0, 500) || '',
     };
 }
 
-// ─────────────────────────────────────────────
-// CORE AGENT — START → THINK → TOOL → OBSERVE → OUTPUT
-// ─────────────────────────────────────────────
-
+// this is the main agent function
+// it follows the START -> THINK -> TOOL -> OBSERVE -> OUTPUT pattern
 async function cloneWebsite(url) {
 
-    // ── START ──────────────────────────────────
     console.log("\n[START] New cloning task received.");
     console.log(`        Target URL: ${url}`);
 
-    // ── THINK ──────────────────────────────────
+    // figure out what needs to happen before doing anything
     console.log("\n[THINK] Breaking down the task...");
     console.log("        Step 1: Scrape the target website to extract layout data.");
     console.log("        Step 2: Send scraped data to the LLM to generate HTML/CSS.");
     console.log("        Step 3: Write the generated code to 'website_clone.html'.");
     console.log("        Step 4: Open the file in the browser for the user.");
 
-    // ── TOOL: scrapeWebsite ────────────────────
+    // step 1: actually scrape the site
     console.log("\n[TOOL]  → scrapeWebsite(" + url + ")");
     let scraped;
     try {
         scraped = await scrapeWebsite(url);
     } catch (err) {
-        console.error(`\n[OBSERVE] ❌ Scraping failed: ${err.message}`);
-        console.log("          The site may be blocking automated requests (e.g. Cloudflare). Try another URL.");
+        console.error(`\n[OBSERVE] Scraping failed: ${err.message}`);
+        console.log("          The site may be blocking bots (Cloudflare etc). Try another URL.");
         return;
     }
 
-    // ── OBSERVE ────────────────────────────────
     console.log(`\n[OBSERVE] Scrape complete.`);
     console.log(`          Title    : ${scraped.title}`);
     console.log(`          Nav items: ${scraped.navText.substring(0, 80)}...`);
     console.log(`          Hero text: ${scraped.heroText.substring(0, 80)}...`);
 
-    // ── THINK (step 2) ─────────────────────────
+    // now prep the prompt — if it's scaler we inject specific color tokens
+    // so the clone actually looks like the real thing
     console.log("\n[THINK]  Preparing design context and calling LLM (llama-3.3-70b-versatile)...");
 
-    // Inject Scaler-specific design tokens if applicable
     let designHints = `Use Google Fonts (Inter), Flexbox/Grid, and a modern professional color palette appropriate for the scraped site.`;
     if (url.includes('scaler.com')) {
         designHints = `
@@ -121,7 +115,7 @@ Exact Scaler Academy Design Tokens — replicate these precisely:
     }
 
     const systemPrompt = `You are an expert frontend developer. 
-Return ONLY a complete, valid HTML5 document. No markdown fences, no explanation text, no code comments explaining what you are doing — just the raw HTML starting with <!DOCTYPE html>.`;
+Return ONLY a complete, valid HTML5 document. No markdown fences, no explanation text — just the raw HTML starting with <!DOCTYPE html>.`;
 
     const userPrompt = `Clone this website's visual design into a single HTML file.
 
@@ -137,7 +131,7 @@ ${designHints}
 BUILD THESE SECTIONS:
 1. <header> — sticky navbar, logo text on left, nav links on right, professional styling.
 2. <section class="hero"> — full-width, use the gradient, real headline from scraped data, subtext, 2 CTA buttons.
-3. <section class="courses"> — heading "Our Programs", CSS Grid with 3–4 real course cards from scraped data.
+3. <section class="courses"> — heading "Our Programs", CSS Grid with 3-4 real course cards from scraped data.
 4. <footer> — dark background, 4-column layout, real links from scraped footer text, copyright line.
 
 CSS RULES:
@@ -149,7 +143,7 @@ CSS RULES:
 
 Start immediately with <!DOCTYPE html>.`;
 
-    // ── TOOL: Groq LLM HTML generation ────────
+    // step 2: ask the LLM to generate the HTML
     console.log("\n[TOOL]  → groq.chat.completions.create(llama-3.3-70b-versatile)");
     let htmlContent = '';
     try {
@@ -163,49 +157,44 @@ Start immediately with <!DOCTYPE html>.`;
             temperature: 0.2,
         });
         htmlContent = completion.choices[0].message.content.trim();
-        // strip any markdown the model might still add
+
+        // model sometimes wraps in ``` even when told not to, strip those out
         if (htmlContent.startsWith('```')) {
             htmlContent = htmlContent.replace(/^```[a-z]*\n?/, '').replace(/\n?```$/, '').trim();
         }
     } catch (err) {
-        console.error("\n[OBSERVE] ❌ LLM generation failed:", err.message);
+        console.error("\n[OBSERVE] LLM generation failed:", err.message);
         return;
     }
 
-    // ── OBSERVE ────────────────────────────────
     const lineCount = htmlContent.split('\n').length;
     console.log(`\n[OBSERVE] HTML generated successfully. (${lineCount} lines)`);
 
-    // ── TOOL: createFile ───────────────────────
+    // step 3: save the file
     const filename = 'website_clone.html';
     console.log(`\n[TOOL]  → createFile("${filename}")`);
     const fileResult = await createFile(filename, htmlContent);
     console.log(`[OBSERVE] ${fileResult}`);
 
-    // ── TOOL: openInBrowser ────────────────────
+    // step 4: pop it open in the browser
     console.log(`\n[TOOL]  → openInBrowser("${filename}")`);
     const browserResult = await openInBrowser(filename);
     console.log(`[OBSERVE] ${browserResult}`);
 
-    // ── OUTPUT ─────────────────────────────────
-    console.log("\n[OUTPUT] ✅ Clone complete!");
-    console.log(`         File : ${process.cwd()}/${filename}`);
-    console.log("         The cloned website has been opened in your browser.\n");
+    console.log("\n[OUTPUT] Clone complete!");
+    console.log(`         File saved at: ${process.cwd()}/${filename}`);
+    console.log("         Check your browser — the cloned site should be open now.\n");
 }
-
-// ─────────────────────────────────────────────
-// CLI LOOP — keep running until user types exit/quit
-// ─────────────────────────────────────────────
 
 const rl = readline.createInterface({ input: process.stdin, output: process.stdout });
 
-// accept https:// URLs and also bare domains like "scaler.com" or "clone google.com"
+// try to find a URL in whatever the user typed
+// handles both full URLs (https://...) and bare domains (scaler.com)
 function extractUrl(input) {
-    // first try to find a full URL with protocol
     let match = input.match(/https?:\/\/[^\s]+/);
     if (match) return match[0];
 
-    // fallback: find anything that looks like a domain (word.word or word.word/path)
+    // if no protocol found, check for something that looks like a domain
     match = input.match(/\b([a-zA-Z0-9-]+\.[a-zA-Z]{2,}(?:\/[^\s]*)?)\b/);
     if (match) return `https://${match[1]}`;
 
@@ -214,13 +203,13 @@ function extractUrl(input) {
 
 async function chatLoop() {
     console.log("\n==========================================");
-    console.log("  🤖  Website Cloner AI  —  Powered by Groq");
+    console.log("  Website Cloner AI  —  Powered by Groq");
     console.log("==========================================");
-    console.log("  I can clone any website into an HTML file.");
-    console.log("  Give me a URL, e.g.: Clone https://scaler.com");
+    console.log("  Give me any URL and I'll clone it for you.");
+    console.log("  Example: Clone https://scaler.com");
     console.log("  Type 'exit' or 'quit' to stop.\n");
 
-    // keep the conversation going forever — this is the agent loop
+    // keep looping until user says exit — this is the agent loop
     while (true) {
         const userInput = await rl.question("You: ");
         const trimmed = userInput.trim();
@@ -236,12 +225,11 @@ async function chatLoop() {
         const url = extractUrl(trimmed);
 
         if (url) {
-            // kick off the cloning agent loop
             await cloneWebsite(url);
         } else {
-            // conversational fallback — ask the user for a URL
-            console.log("\nAgent: I'm a website cloning agent! Give me a URL and I'll clone it.");
-            console.log("       Example: Clone https://scaler.com\n");
+            // doesn't look like a URL, just guide them
+            console.log("\nAgent: I need a website URL to clone. Try something like:");
+            console.log("       Clone https://scaler.com\n");
         }
     }
 }
