@@ -89,7 +89,16 @@ The generated clone MUST include:
 1. Header: Navigation bar with logo (text), Courses, Mentorship, Success Stories.
 2. Hero Section: Headline ("Unlock Your Coding Potential"), subheading, CTA button with hover effects.
 3. Footer: Copyright, links, social icons.
-Design constraints: Use dark mode, modern gradients (e.g., purple/blue like typical EdTech), flexbox/grid for layout, and modern fonts (Google Fonts like Inter or Roboto).
+
+Design constraints:
+- Use dark mode (#0f172a background, #e2e8f0 text).
+- Use a modern <style> block, do not use inline styles.
+- Use Flexbox for layout.
+- The Hero section should have a beautiful gradient text (e.g., linear-gradient to right, #3b82f6, #8b5cf6).
+- Use Google Fonts (Inter).
+- Make the CTA button look premium (padding, border-radius, background gradient, hover transform).
+- Add simple CSS animations (like fade-in for the hero section).
+
 Use the 'createFile' tool to save it as "scaler_clone.html", then use 'openInBrowser' to open it.
 
 IMPORTANT: Always briefly explain your reasoning before calling tools so the user can see your thought process.
@@ -118,7 +127,7 @@ async function chatLoop() {
         try {
             // let's call groq!
             let response = await groq.chat.completions.create({
-                model: "llama3-70b-8192", // good model for tool calling
+                model: "llama-3.3-70b-versatile", // good model for tool calling
                 messages: conversationHistory,
                 tools: toolDefinitions,
                 tool_choice: "auto",
@@ -164,7 +173,7 @@ async function chatLoop() {
 
                 // Get next response after tool execution
                 response = await groq.chat.completions.create({
-                    model: "llama3-70b-8192",
+                    model: "llama-3.3-70b-versatile",
                     messages: conversationHistory,
                 });
 
