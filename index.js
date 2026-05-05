@@ -29,9 +29,9 @@ async function createFile(filename, content) {
 async function openInBrowser(filename) {
     try {
         let cmd = process.platform === 'darwin' ? `open "${filename}"` :
-                  process.platform === 'win32' ? `start "" "${filename}"` :
-                  `xdg-open "${filename}"`;
-        
+            process.platform === 'win32' ? `start "" "${filename}"` :
+                `xdg-open "${filename}"`;
+
         exec(cmd);
         return `Opened ${filename} in browser successfully.`;
     } catch (error) {
@@ -105,7 +105,7 @@ async function chatLoop() {
 
     while (true) {
         const userInput = await rl.question("You: ");
-        
+
         if (userInput.toLowerCase() === 'exit' || userInput.toLowerCase() === 'quit') {
             console.log("Agent: Bye! See you later.");
             rl.close();
@@ -134,11 +134,11 @@ async function chatLoop() {
 
             // check if model wants to call tools
             let toolCalls = responseMessage.tool_calls;
-            
+
             while (toolCalls && toolCalls.length > 0) {
                 // To keep the student vibe, just log it out 
                 console.log(`[THINK] Agent decided to use tools: ${toolCalls.map(t => t.function.name).join(', ')}`);
-                
+
                 // We need to add the assistant's tool call to history
                 conversationHistory.push(responseMessage);
 
@@ -146,14 +146,14 @@ async function chatLoop() {
                 for (const toolCall of toolCalls) {
                     const functionName = toolCall.function.name;
                     const functionArgs = JSON.parse(toolCall.function.arguments);
-                    
+
                     console.log(`[TOOL] Executing ${functionName} with arguments: ${JSON.stringify(functionArgs).substring(0, 100)}...`);
-                    
+
                     const toolFunction = availableTools[functionName];
                     const toolResult = await toolFunction(functionArgs.filename, functionArgs.content);
-                    
+
                     console.log(`[OBSERVE] Result: ${toolResult}`);
-                    
+
                     conversationHistory.push({
                         role: "tool",
                         name: functionName,
@@ -167,7 +167,7 @@ async function chatLoop() {
                     model: "llama3-70b-8192",
                     messages: conversationHistory,
                 });
-                
+
                 responseMessage = response.choices[0].message;
                 toolCalls = responseMessage.tool_calls;
             }
@@ -178,7 +178,7 @@ async function chatLoop() {
                 conversationHistory.push({ role: "assistant", content: responseMessage.content });
             } else if (!responseMessage.content && (!toolCalls || toolCalls.length === 0)) {
                 // edge case where it returns nothing
-                 console.log(`[OUTPUT] Done.\n`);
+                console.log(`[OUTPUT] Done.\n`);
             }
 
         } catch (error) {
