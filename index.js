@@ -33,8 +33,8 @@ async function openInBrowser(filename) {
     try {
         const abs = `${process.cwd()}/${filename}`;
         const cmd = process.platform === 'darwin' ? `open "${abs}"` :
-                    process.platform === 'win32'  ? `start "" "${abs}"` :
-                                                    `xdg-open "${abs}"`;
+            process.platform === 'win32' ? `start "" "${abs}"` :
+                `xdg-open "${abs}"`;
         // wait a bit so the file is written before the browser tries to open it
         await new Promise(r => setTimeout(r, 700));
         exec(cmd);
@@ -56,9 +56,9 @@ async function scrapeWebsite(url) {
     const $ = cheerio.load(html);
 
     return {
-        title:      $('title').text().trim().substring(0, 120) || 'Untitled',
-        navText:    $('header, nav').first().text().replace(/\s+/g, ' ').trim().substring(0, 400) || '',
-        heroText:   $('main, [class*="hero"], section').first().text().replace(/\s+/g, ' ').trim().substring(0, 700) || '',
+        title: $('title').text().trim().substring(0, 120) || 'Untitled',
+        navText: $('header, nav').first().text().replace(/\s+/g, ' ').trim().substring(0, 400) || '',
+        heroText: $('main, [class*="hero"], section').first().text().replace(/\s+/g, ' ').trim().substring(0, 700) || '',
         footerText: $('footer').first().text().replace(/\s+/g, ' ').trim().substring(0, 500) || '',
     };
 }
@@ -148,12 +148,12 @@ Start immediately with <!DOCTYPE html>.`;
     let htmlContent = '';
     try {
         const completion = await groq.chat.completions.create({
-            model:       "llama-3.3-70b-versatile",
-            messages:    [
+            model: "llama-3.3-70b-versatile",
+            messages: [
                 { role: "system", content: systemPrompt },
-                { role: "user",   content: userPrompt }
+                { role: "user", content: userPrompt }
             ],
-            max_tokens:  8192,
+            max_tokens: 8192,
             temperature: 0.2,
         });
         htmlContent = completion.choices[0].message.content.trim();
