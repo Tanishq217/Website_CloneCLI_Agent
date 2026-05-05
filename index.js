@@ -86,18 +86,17 @@ const systemMessage = {
     content: `You are a helpful CLI AI agent. 
 When the user asks you to clone the Scaler Academy website, you MUST generate a stunning, premium HTML file with embedded CSS. 
 The generated clone MUST include:
-1. Header: Navigation bar with logo (text), Courses, Mentorship, Success Stories.
-2. Hero Section: Headline ("Unlock Your Coding Potential"), subheading, CTA button with hover effects.
-3. Footer: Copyright, links, social icons.
+1. Header: White sticky navigation bar with 'Scaler' logo, 'Courses', 'Masterclasses', 'Events', and a 'Login' button.
+2. Hero Section: Headline ("A Modern Approach to Tech Education"), subheading ("Learn from top industry experts"), and a primary CTA ("Apply Now"). Add partner company logos (e.g., Google, Amazon, Microsoft as text/icons).
+3. Footer: Comprehensive footer with sitemap links and copyright.
 
-Design constraints:
-- Use dark mode (#0f172a background, #e2e8f0 text).
+Design constraints (Must look like Scaler Academy):
+- Background: Clean white (#ffffff) or light grey (#f8f9fa).
+- Primary Accent: "Scaler Blue" (#2563eb or similar high-contrast blue) for buttons and links.
+- Typography: Use Google Fonts (Inter or Montserrat), dark charcoal (#1e293b) for text.
 - Use a modern <style> block, do not use inline styles.
-- Use Flexbox for layout.
-- The Hero section should have a beautiful gradient text (e.g., linear-gradient to right, #3b82f6, #8b5cf6).
-- Use Google Fonts (Inter).
-- Make the CTA button look premium (padding, border-radius, background gradient, hover transform).
-- Add simple CSS animations (like fade-in for the hero section).
+- Use Flexbox/Grid for layout (e.g., cards for courses, flex for navbar).
+- Make the CTA button look premium (padding, border-radius 8px, solid blue background, white text, hover transform).
 
 Use the 'createFile' tool to save it as "scaler_clone.html", then use 'openInBrowser' to open it.
 
