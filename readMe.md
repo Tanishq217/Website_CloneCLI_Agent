@@ -36,15 +36,5 @@ You can then chat with it:
 - "Can you clone https://scaler.com for me?"
 - Type "exit" or "quit" to stop.
 
-## Demo Recording Instructions (For YouTube Submission)
-1. Open your terminal and screen recorder.
-2. Run `node index.js`.
-3. Type a simple hello prompt to show it works conversationally.
-4. Type exactly: `"clone https://www.scaler.com"` (or any other website URL).
-5. Let the video record the terminal showing the thought process (`[THINK]`, `[TOOL]`, `[OBSERVE]`, etc.), including the new `scrapeWebsite` tool.
-6. The browser will automatically pop open with the newly generated `website_clone.html` file.
-7. Scroll through the generated webpage (Header, Hero Section, Footer) to show the quality of the dynamic clone.
-8. Go back to terminal and type `exit`.
-
 ---
 *Created for Assignment 02 — AI Agent CLI Tool*

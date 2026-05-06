@@ -3,189 +3,172 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Become the Professional Built for the Next Decade in AI.</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <title>Untitled</title>
     <style>
-        body {
-            font-family: 'Inter', sans-serif;
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap');
+        :root {
+            --primary-color: #212121;
+            --secondary-color: #3498db;
+            --background-color: #f9f9f9;
+            --dark-background-color: #1a1a1a;
+        }
+        * {
+            box-sizing: border-box;
             margin: 0;
             padding: 0;
         }
-        .navbar {
-            background-color: #ffffff;
-            height: 70px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 0 5%;
+        body {
+            font-family: 'Inter', sans-serif;
+            line-height: 1.6;
+            color: var(--primary-color);
+            background-color: var(--background-color);
+        }
+        header {
             position: sticky;
             top: 0;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        }
-        .navbar .logo {
-            font-weight: bold;
-            font-size: 18px;
-            color: #1e1b4b;
-        }
-        .navbar .nav-links {
+            background-color: var(--background-color);
+            padding: 1rem;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            border-bottom: 1px solid #ddd;
         }
-        .navbar .nav-links a {
-            text-decoration: none;
-            color: #1e1b4b;
+        header nav {
+            display: flex;
+            justify-content: flex-end;
+        }
+        header nav a {
             margin-left: 20px;
+            text-decoration: none;
+            color: var(--primary-color);
             transition: color 0.2s ease;
         }
-        .navbar .nav-links a:hover {
-            color: #2563eb;
+        header nav a:hover {
+            color: var(--secondary-color);
         }
         .hero {
-            background: linear-gradient(135deg, #1e1b4b 0%, #312e81 50%, #1e40af 100%);
-            height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            color: #ffffff;
-            padding: 0 5%;
+            background: linear-gradient(45deg, #3498db, #2ecc71);
+            color: #fff;
+            padding: 5rem;
+            text-align: center;
         }
         .hero h1 {
-            font-size: 48px;
-            font-weight: 800;
-            margin-bottom: 20px;
+            font-weight: 700;
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
         }
         .hero p {
-            font-size: 18px;
-            color: #c7d2fe;
-            max-width: 600px;
-            margin-bottom: 40px;
+            font-size: 1.2rem;
+            margin-bottom: 2rem;
         }
-        .cta-button {
-            background-color: #2563eb;
-            color: #ffffff;
-            padding: 14px 32px;
-            border-radius: 8px;
-            font-weight: 700;
+        .hero button {
+            background-color: var(--primary-color);
+            color: #fff;
             border: none;
+            padding: 1rem 2rem;
+            font-size: 1rem;
             cursor: pointer;
             transition: background-color 0.2s ease;
         }
-        .cta-button:hover {
-            background-color: #1e40af;
+        .hero button:hover {
+            background-color: var(--secondary-color);
         }
-        .section {
-            background-color: #f8fafc;
-            padding: 80px 5%;
-        }
-        .features {
+        .courses {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
             gap: 20px;
+            padding: 5rem;
         }
-        .feature-card {
-            background-color: #ffffff;
-            padding: 20px;
+        .course {
+            background-color: #fff;
+            padding: 2rem;
+            border: 1px solid #ddd;
             border-radius: 10px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-            transition: transform 0.2s ease;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
         }
-        .feature-card:hover {
-            transform: scale(1.05);
+        .course h2 {
+            font-weight: 700;
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
         }
-        .feature-card h2 {
-            font-size: 18px;
-            font-weight: 600;
-            margin-bottom: 10px;
-        }
-        .footer {
-            background-color: #0f172a;
-            color: #94a3b8;
-            padding: 40px 5%;
+        footer {
+            background-color: var(--dark-background-color);
+            color: #fff;
+            padding: 2rem;
             display: grid;
             grid-template-columns: repeat(4, 1fr);
             gap: 20px;
         }
-        .footer-column {
-            display: flex;
-            flex-direction: column;
-        }
-        .footer-column a {
+        footer a {
             text-decoration: none;
-            color: #94a3b8;
-            margin-bottom: 10px;
+            color: #fff;
             transition: color 0.2s ease;
         }
-        .footer-column a:hover {
-            color: #ffffff;
+        footer a:hover {
+            color: var(--secondary-color);
+        }
+        @media (max-width: 768px) {
+            .hero {
+                padding: 2rem;
+            }
+            .courses {
+                grid-template-columns: repeat(2, 1fr);
+                padding: 2rem;
+            }
+            footer {
+                grid-template-columns: repeat(2, 1fr);
+            }
         }
     </style>
 </head>
 <body>
-    <nav class="navbar">
-        <div class="logo">Scaler Academy</div>
-        <div class="nav-links">
-            <a href="#">PROGRAM</a>
-            <a href="#">MASTERCLASS</a>
-            <a href="#">AI LABS</a>
-            <a href="#">ALUMNI</a>
-            <a href="#">RESOURCES</a>
-            <a href="#">Placement Report</a>
-        </div>
-    </nav>
+    <header>
+        <span>Untitled</span>
+        <nav>
+            <a href="#">Home</a>
+            <a href="#">About</a>
+            <a href="#">Contact</a>
+        </nav>
+    </header>
     <section class="hero">
+        <h1>Untitled</h1>
+        <p>This is a hero section.</p>
+        <button>Learn More</button>
+        <button>Get Started</button>
+    </section>
+    <section class="courses">
+        <div class="course">
+            <h2>Course 1</h2>
+            <p>This is a course description.</p>
+        </div>
+        <div class="course">
+            <h2>Course 2</h2>
+            <p>This is a course description.</p>
+        </div>
+        <div class="course">
+            <h2>Course 3</h2>
+            <p>This is a course description.</p>
+        </div>
+    </section>
+    <footer>
         <div>
-            <h1>Become the Professional Built for the Next Decade in AI.</h1>
-            <p>Learn from the best in the industry and become a professional built for the next decade in AI.</p>
-            <button class="cta-button">Get Started</button>
+            <h2>Untitled</h2>
+            <a href="#">Home</a>
+            <a href="#">About</a>
         </div>
-    </section>
-    <section class="section">
-        <h1>Our Programs</h1>
-        <div class="features">
-            <div class="feature-card">
-                <h2>Modern Software and AI Engineering</h2>
-                <p>Learn the skills required to become a software and AI engineer.</p>
-            </div>
-            <div class="feature-card">
-                <h2>Modern Data Science and ML with Specialisation in AI</h2>
-                <p>Learn the skills required to become a data scientist and ML engineer with specialisation in AI.</p>
-            </div>
-            <div class="feature-card">
-                <h2>DevOps, Cloud & AI Platform Engineering</h2>
-                <p>Learn the skills required to become a DevOps, cloud and AI platform engineer.</p>
-            </div>
-            <div class="feature-card">
-                <h2>Advanced AI & Machine Learning with Agentic AI</h2>
-                <p>Learn the skills required to become an advanced AI and machine learning engineer with agentic AI.</p>
-            </div>
-            <div class="feature-card">
-                <h2>AI Engineering Advance</h2>
-                <p>Learn the skills required to become an AI engineer and advance your career.</p>
-            </div>
+        <div>
+            <h2>Links</h2>
+            <a href="#">Link 1</a>
+            <a href="#">Link 2</a>
         </div>
-    </section>
-    <footer class="footer">
-        <div class="footer-column">
-            <a href="#">Interviewbit Software Services Private Limited</a>
-            <a href="#">5th Floor, Surya Park II</a>
-            <a href="#">14, 3rd cross, Parappana Agrahar Electronic City Rd</a>
-            <a href="#">Electronics City Phase 1 Bengaluru, Karnataka 560100</a>
+        <div>
+            <h2>Contact</h2>
+            <a href="#">Email</a>
+            <a href="#">Phone</a>
         </div>
-        <div class="footer-column">
-            <a href="#">Download our APP</a>
-            <a href="#">Explore Scaler</a>
-        </div>
-        <div class="footer-column">
-            <a href="#">Modern Software and AI Engineering</a>
-            <a href="#">Modern Data Science and ML with Specialisation in AI</a>
-        </div>
-        <div class="footer-column">
-            <a href="#">DevOps, Cloud & AI Platform Engineering</a>
-            <a href="#">Advanced AI & Machine Learning with Agentic AI</a>
-            <a href="#">AI Engineering Advance</a>
+        <div>
+            <h2>Copyright</h2>
+            <p>&copy; 2023 Untitled</p>
         </div>
     </footer>
 </body>
